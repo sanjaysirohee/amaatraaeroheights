@@ -1,0 +1,3 @@
+# Netscape HTTP Cookie File
+# Written by HTTrack Website Copier
+#HttpOnly_amaatraaeroheights.in	FALSE	/	TRUE	1795072355	ci_session	027c4a510ffbf94216d1710a4abece2a053d1ed9
