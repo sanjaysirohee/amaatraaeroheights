@@ -989,17 +989,18 @@
     <!--        </div>-->
     <!--    </div>-->
     <!--</section>-->
-
 <script>
-    document.addEventListener('contextmenu', function(e) {
-    e.preventDefault(); // Prevent right-click menu from appearing
-});
-</script>
- <script>
-    document.querySelector('.image-container:last-child img').addEventListener('contextmenu', function(e) {
+    document.addEventListener('contextmenu', function (e) {
         e.preventDefault(); // Prevent right-click menu from appearing
     });
-</script> -->
+
+    var lastContainerImg = document.querySelector('.image-container:last-child img');
+    if (lastContainerImg) {
+        lastContainerImg.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+    }
+</script>
 
     <section class="mb-4">
         <div class="contact section-padding">
@@ -1248,6 +1249,143 @@
                 }
             });
         </script>
+
+    <style>
+    #updateAutoScroll.row.update {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        scroll-behavior: smooth;
+        margin: 0 !important;
+        padding-bottom: 10px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        width: 100% !important;
+    }
+
+    #updateAutoScroll.row.update::-webkit-scrollbar {
+        display: none;
+    }
+
+    #updateAutoScroll .update-card-item {
+        flex: 0 0 33.3333% !important;
+        max-width: 33.3333% !important;
+        width: 33.3333% !important;
+    }
+
+    @media (max-width: 991px) {
+        #updateAutoScroll .update-card-item {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+            width: 50% !important;
+        }
+    }
+
+    @media (max-width: 575px) {
+        #updateAutoScroll .update-card-item {
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    var SPEED_MS = 1400; // Fast & smooth step interval (1.4s)
+
+    function initAutoScroll() {
+        var track = document.getElementById("updateAutoScroll");
+        if (!track || track.dataset.autoScrollActive === "1") return;
+        track.dataset.autoScrollActive = "1";
+
+        // Circular loop ke liye original cards ke clones ek baar append karein
+        if (!track.dataset.cloned) {
+            var originals = Array.prototype.slice.call(track.querySelectorAll(".update-card-item"));
+            originals.forEach(function (card) {
+                var clone = card.cloneNode(true);
+                clone.classList.add("is-clone");
+                track.appendChild(clone);
+            });
+            track.dataset.cloned = "1";
+        }
+
+        function getStep() {
+            var card = track.querySelector(".update-card-item");
+            return card ? Math.round(card.getBoundingClientRect().width) : 300;
+        }
+
+        function getHalfWidth() {
+            return track.scrollWidth / 2;
+        }
+
+        function slideNext() {
+            var halfWidth = getHalfWidth();
+            if (halfWidth <= track.clientWidth + 2) return;
+
+            var step = getStep();
+            if (track.scrollLeft + step >= halfWidth) {
+                track.style.scrollBehavior = "auto";
+                track.scrollLeft = 0;
+                void track.offsetWidth;
+                track.style.scrollBehavior = "smooth";
+                track.scrollLeft = step;
+            } else {
+                track.style.scrollBehavior = "smooth";
+                track.scrollLeft += step;
+            }
+        }
+
+        function slidePrev() {
+            var halfWidth = getHalfWidth();
+            var step = getStep();
+
+            if (track.scrollLeft - step < 0) {
+                track.style.scrollBehavior = "auto";
+                track.scrollLeft = Math.max(0, halfWidth - step);
+                void track.offsetWidth;
+                track.style.scrollBehavior = "smooth";
+            } else {
+                track.style.scrollBehavior = "smooth";
+                track.scrollLeft = Math.max(0, track.scrollLeft - step);
+            }
+        }
+
+        var timer = setInterval(slideNext, SPEED_MS);
+
+        track.addEventListener("mouseenter", function () {
+            clearInterval(timer);
+        });
+        track.addEventListener("mouseleave", function () {
+            clearInterval(timer);
+            timer = setInterval(slideNext, SPEED_MS);
+        });
+
+        var prevBtn = document.getElementById("updatePrevBtn");
+        var nextBtn = document.getElementById("updateNextBtn");
+        if (nextBtn) {
+            nextBtn.addEventListener("click", function () {
+                clearInterval(timer);
+                slideNext();
+                timer = setInterval(slideNext, SPEED_MS);
+            });
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener("click", function () {
+                clearInterval(timer);
+                slidePrev();
+                timer = setInterval(slideNext, SPEED_MS);
+            });
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAutoScroll);
+    } else {
+        initAutoScroll();
+    }
+})();
+</script>
     </body>
 
 <!-- Mirrored from https://amaatraaeroheights.in/ by HTTrack Website Copier/3.x [XR&CO], Thu, 19 Nov 2026 05:12:50 GMT -->
